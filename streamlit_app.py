@@ -39,36 +39,6 @@ def load_data():
 
 df = load_data()
 
-
-#%%Crear un nuevo DataFrame con las ventas total por dia
-Ventas_diarias = df.groupby(["Date"])[["Total"]].sum().reset_index()
-
-#https://pandas.pydata.org/docs/reference/api/pandas.Series.dt.date.html
-#Para integrar interactividad con Streamlit la fecha debe estar formato datetime año,mes,dia
-
-Ventas_diarias["Date"] = pd.to_datetime(Ventas_diarias["Date"]).dt.date
-
-#Ordenamos el nuevo DataFrame por seguridad
-
-Ventas_diarias = Ventas_diarias.sort_values(by='Date', ascending=True)
-Ventas_diarias = Ventas_diarias.reset_index(drop=True)
-
-#%% Sidebar Streamlit
-#Ventas a lo largo del tiempo Slider
-
-st.sidebar.header("Fecha de Ventas")
-periodo_tiempo_i, periodo_tiempo_f = st.sidebar.slider("Fecha", 
-                                    Ventas_diarias["Date"].min(), 
-                                    Ventas_diarias["Date"].max(),
-                                    (Ventas_diarias["Date"].min(), Ventas_diarias["Date"].max())
-                                     )
-
-df_años = Ventas_diarias[(Ventas_diarias["Date"] >= periodo_tiempo_i) & (Ventas_diarias["Date"] <= periodo_tiempo_f)]     
-
-
-
-#%%
-
 # ===========================
 # Barra lateral - Filtros
 # ===========================
@@ -107,8 +77,8 @@ with tab1:
     fig, ax = plt.subplots(figsize=(12, 6))
 
     # Línea general
-    #ax.plot(ventas_por_fecha['Date'], ventas_por_fecha['Total'], color='lightblue', label='Ventas Diarias')
-    ax = sns.lineplot(data = df_años, x="Date", y="Total")
+    ax.plot(ventas_por_fecha['Date'], ventas_por_fecha['Total'], color='lightblue', label='Ventas Diarias')
+
     # Puntos bajo el promedio
     ax.scatter(
         ventas_por_fecha[~ventas_por_fecha['SobrePromedio']]['Date'],
